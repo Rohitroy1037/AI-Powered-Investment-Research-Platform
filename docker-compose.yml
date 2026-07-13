@@ -4,15 +4,22 @@ services:
     restart: unless-stopped
     volumes:
       - mongo-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')", '--quiet']
+      interval: 10s
+      timeout: 5s
+      retries: 5
   api:
     build: ./apps/api
     env_file: .env
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
   web:
-    build: ./apps/web
-    environment:
-      NEXT_PUBLIC_API_URL: /api/v1
+    build:
+      context: ./apps/web
+      args:
+        NEXT_PUBLIC_API_URL: /api/v1
     depends_on:
       - api
   nginx:
