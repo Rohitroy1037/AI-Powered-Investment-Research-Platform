@@ -10,14 +10,17 @@ services:
       timeout: 5s
       retries: 5
   api:
-    build: ./apps/api
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
     env_file: .env
     depends_on:
       mongo:
         condition: service_healthy
   web:
     build:
-      context: ./apps/web
+      context: .
+      dockerfile: apps/web/Dockerfile
       args:
         NEXT_PUBLIC_API_URL: /api/v1
     depends_on:
