@@ -1,4 +1,5 @@
 import { Router, type Request, type Response } from 'express';
+import rateLimit from 'express-rate-limit';
 import { requireAuth } from '../middleware/auth.js';
 import { requireProjectAccess, requireTaskAccess } from '../middleware/project-access.js';
 import * as auth from '../controllers/auth-controller.js';
@@ -13,10 +14,17 @@ const protect = (handler: (req: Request, res: Response) => Promise<unknown>) => 
   requireAuth,
   asyncHandler(handler),
 ];
-router.post('/auth/register', asyncHandler(auth.register));
-router.post('/auth/login', asyncHandler(auth.login));
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many attempts, please try again later' },
+});
+router.post('/auth/register', authLimiter, asyncHandler(auth.register));
+router.post('/auth/login', authLimiter, asyncHandler(auth.login));
 router.post('/auth/refresh', asyncHandler(auth.refresh));
-router.post('/auth/forgot-password', asyncHandler(auth.forgotPassword));
+router.post('/auth/forgot-password', authLimiter, asyncHandler(auth.forgotPassword));
 router.post('/auth/logout', ...protect(auth.logout));
 router.get('/auth/me', ...protect(auth.profile));
 router.patch('/auth/me', ...protect(auth.updateProfile));
