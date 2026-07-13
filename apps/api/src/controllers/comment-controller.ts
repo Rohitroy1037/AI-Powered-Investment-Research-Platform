@@ -35,7 +35,7 @@ export const createComment = async (req: Request, res: Response) => {
     );
   return respond(
     res,
-    200,
+    201,
     'Comment added',
     await comment.populate('author', 'name email avatarUrl'),
   );
