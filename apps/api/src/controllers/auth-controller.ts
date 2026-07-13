@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import { z } from 'zod';
 import { UserModel, hashPassword, matchesPassword } from '../models/user.js';
 import { loginSchema, registerSchema } from '../validators/schemas.js';
 import { respond } from '../utils/api.js';
@@ -22,7 +23,7 @@ export const register = async (req: Request, res: Response) => {
 };
 export const login = async (req: Request, res: Response) => {
   const input = loginSchema.parse(req.body);
-  req.log.info({ email: input.email, password: input.password }, 'Login attempt received');
+  req.log.info({ email: input.email }, 'Login attempt received');
   const user = await UserModel.findOne({ email: input.email }).select('+passwordHash');
   if (!user || !(await matchesPassword(input.password, String(user.passwordHash))))
     return respond(res, 401, 'Invalid email or password');
@@ -64,4 +65,3 @@ export const updateProfile = async (req: Request, res: Response) => {
   await req.user!.save();
   return respond(res, 200, 'Profile updated', req.user);
 };
-import { z } from 'zod';
