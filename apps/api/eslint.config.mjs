@@ -5,6 +5,9 @@ export default [
     files: ['**/*.ts'],
     languageOptions: { parser },
     plugins: { '@typescript-eslint': tseslint },
-    rules: { ...tseslint.configs.recommended.rules },
+    rules: {
+      ...tseslint.configs.recommended.rules,
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    },
   },
 ];
