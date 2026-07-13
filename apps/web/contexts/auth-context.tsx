@@ -31,7 +31,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
   const signOut = () => {
     void api('/auth/logout', { method: 'POST' }).catch(() => undefined);
-    localStorage.clear();
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     setUser(null);
   };
   return (
