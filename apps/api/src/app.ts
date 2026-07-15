@@ -9,7 +9,7 @@ import { env } from './config/env.js';
 export const createApp = () => {
   const app = express();
   app.use(pinoHttp());
-  const allowedOrigins = env.CORS_ORIGIN.split(',').map((o) => o.trim());
+  const allowedOrigins = (env.CORS_ORIGIN || '').split(',').map((o: string) => o.trim());
   app.use(
     cors({
       origin: (origin, callback) => {

@@ -10,5 +10,4 @@ const schema = z.object({
   API_PORT: z.coerce.number().default(4000),
   CORS_ORIGIN: z.string().default('http://localhost:3000'),
 });
-const isVercel = !!process.env.VERCEL;
-export const env = isVercel ? (process.env as any) : schema.parse(process.env);
+export const env = process.env as any;
