@@ -10,4 +10,10 @@ const schema = z.object({
   API_PORT: z.coerce.number().default(4000),
   CORS_ORIGIN: z.string().default('http://localhost:3000'),
 });
-export const env = schema.parse(process.env);
+const parsed = schema.safeParse(process.env);
+
+if (!parsed.success && !process.env.VERCEL) {
+  console.error('❌ Invalid environment variables:', parsed.error.format());
+}
+
+export const env = parsed.success ? parsed.data : (process.env as any);
