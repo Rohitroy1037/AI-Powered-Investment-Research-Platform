@@ -10,4 +10,8 @@ const schema = z.object({
   API_PORT: z.coerce.number().default(4000),
   CORS_ORIGIN: z.string().default('http://localhost:3000'),
 });
-export const env = process.env as any;
+
+const parsed = schema.safeParse(process.env);
+export const env = parsed.success
+  ? parsed.data
+  : (process.env as unknown as z.infer<typeof schema>);
